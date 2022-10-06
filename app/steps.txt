@@ -1,0 +1,19 @@
+# make sure that docker is running
+
+minikube start
+minikube addons enable ingress
+
+
+mvn io.quarkus.platform:quarkus-maven-plugin:2.10.1.Final:create \
+    -DprojectGroupId=org.acme \
+    -DprojectArtifactId=kubernetes-quickstart \
+    -Dextensions="resteasy-reactive,kubernetes,jib"
+
+cd kubernetes-quickstart
+
+mvn -DskipTests package -Dquarkus.container-image.build=true
+
+
+kubectl create ns tp
+kubectl create -f all-in-one-stateless.yaml
+minikube service tp-rest -n tp
